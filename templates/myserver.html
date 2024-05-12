@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input[type="file"],
+        input[type="text"],
+        input[type="submit"],
+        button,
+        select {
+            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            cursor: pointer;
+        }
+        select {
+            width: calc(75% - 10px); /* Adjusted width for the dropdown */
+            margin-right: 10px; /* Added margin between dropdown and button */
+        }
+        input[type="submit"],
+        button {
+            cursor: pointer;
+            width: calc(25% - 10px); /* Adjusted width for the button */
+        }
+        button.create-folder {
+            background-color: #28a745; /* Green color for the Create New Folder button */
+            color: #fff;
+        }
+        input[type="submit"]:hover,
+        button:hover {
+            background-color: #0056b3;
+        }
+        .file-list {
+            margin-top: 20px;
+        }
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .file-list li {
+            margin-bottom: 20px; /* Increased margin for more spacing */
+        }
+        .file-list li .file-info {
+            display: flex;
+            align-items: center;
+        }
+        .download-button {
+            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload a File</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+            <div class="form-container">
+                <label for="file">Select a file to upload:</label>
+                <input type="file" id="file" name="file">
+            </div>
+            <div class="form-container">
+                <label for="folder">Select or create a folder:</label>
+                <select id="folder" name="folder_name">
+                    <option value="">Select Existing Folder</option>
+                    {% for folder in folders %}
+                        <option value="{{ folder }}">{{ folder }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="create-folder" onclick="createNewFolder()">Create New Folder</button>
+            </div>
+            <input type="submit" value="Upload">
+        </form>
+        <form id="newFolderForm" action="/create_folder" method="post" style="display: none;">
+            <div class="form-container">
+                <label for="new_folder_name">New Folder Name:</label>
+                <input type="text" id="new_folder_name" name="folder_name" required>
+            </div>
+            <input type="submit" value="Create Folder">
+        </form>
+
+        <div class="file-list">
+            <h3>Uploaded Files</h3>
+            {% for folder, files in folder_files.items() %}
+                <h4>{{ folder }}</h4>
+                <ul>
+                    {% for file in files %}
+                        <li>
+                            <div class="file-info">
+                                <span>{{ file }}</span>
+                                <a class="download-button" href="{{ url_for('download_file', folder=folder, filename=file) }}">Download</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function createNewFolder() {
+            document.getElementById('newFolderForm').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
